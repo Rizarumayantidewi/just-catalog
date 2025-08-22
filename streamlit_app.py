@@ -1,151 +1,42 @@
 import streamlit as st
-import pandas as pd
-import math
-from pathlib import Path
 
-# Set the title and favicon that appear in the Browser's tab bar.
-st.set_page_config(
-    page_title='GDP dashboard',
-    page_icon=':earth_americas:', # This is an emoji shortcode. Could be a URL too.
-)
+# Add Logo
+st.image("data/logo3p.png", width=150)  # ganti dengan path logo kamu
 
-# -----------------------------------------------------------------------------
-# Declare some useful functions.
+# Title
+st.subheader("📦 Pandan Product Catalog")
 
-@st.cache_data
-def get_gdp_data():
-    """Grab GDP data from a CSV file.
-
-    This uses caching to avoid having to read the file every time. If we were
-    reading from an HTTP endpoint instead of a file, it's a good idea to set
-    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
-    """
-
-    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
-    DATA_FILENAME = Path(__file__).parent/'data/gdp_data.csv'
-    raw_gdp_df = pd.read_csv(DATA_FILENAME)
-
-    MIN_YEAR = 1960
-    MAX_YEAR = 2022
-
-    # The data above has columns like:
-    # - Country Name
-    # - Country Code
-    # - [Stuff I don't care about]
-    # - GDP for 1960
-    # - GDP for 1961
-    # - GDP for 1962
-    # - ...
-    # - GDP for 2022
-    #
-    # ...but I want this instead:
-    # - Country Name
-    # - Country Code
-    # - Year
-    # - GDP
-    #
-    # So let's pivot all those year-columns into two: Year and GDP
-    gdp_df = raw_gdp_df.melt(
-        ['Country Code'],
-        [str(x) for x in range(MIN_YEAR, MAX_YEAR + 1)],
-        'Year',
-        'GDP',
-    )
-
-    # Convert years from string to integers
-    gdp_df['Year'] = pd.to_numeric(gdp_df['Year'])
-
-    return gdp_df
-
-gdp_df = get_gdp_data()
-
-# -----------------------------------------------------------------------------
-# Draw the actual page
-
-# Set the title that appears at the top of the page.
-'''
-# :earth_americas: GDP dashboard
-
-Browse GDP data from the [World Bank Open Data](https://data.worldbank.org/) website. As you'll
-notice, the data only goes to 2022 right now, and datapoints for certain years are often missing.
-But it's otherwise a great (and did I mention _free_?) source of data.
-'''
-
-# Add some spacing
-''
-''
-
-min_value = gdp_df['Year'].min()
-max_value = gdp_df['Year'].max()
-
-from_year, to_year = st.slider(
-    'Which years are you interested in?',
-    min_value=min_value,
-    max_value=max_value,
-    value=[min_value, max_value])
-
-countries = gdp_df['Country Code'].unique()
-
-if not len(countries):
-    st.warning("Select at least one country")
-
-selected_countries = st.multiselect(
-    'Which countries would you like to view?',
-    countries,
-    ['DEU', 'FRA', 'GBR', 'BRA', 'MEX', 'JPN'])
-
-''
-''
-''
-
-# Filter the data
-filtered_gdp_df = gdp_df[
-    (gdp_df['Country Code'].isin(selected_countries))
-    & (gdp_df['Year'] <= to_year)
-    & (from_year <= gdp_df['Year'])
+# Product data (example, replace with CSV/Database)
+products = [
+    {"name": "Pandan Bag with Floral Motif - Elegant Pink", "price": 150000, "desc": "Combination of woven pandan + crocodile-pattern synthetic leather.", "Color": "Pink & white with printed floral design.", "Size": "35 x 28 x 12 cm.", "Features": "2 strong handles, 1 main compartment with zipper." , "Advantages": "Perfect for casual & semi-formal occasions, lightweight yet elegant", "img": "data/IMG20250817152213.jpg"},
+    {"name": "Pandan Bag with Butterfly Motif - Blue & White", "price": 150000, "desc": "Natural woven pandan + braided synthetic handles.", "Color": "White with blue butterfly motif.", "Size": "40 x 30 x 12 cm.", "Features": "Long shoulder handles, spacious inner compartment." , "Advantages": "Unique design, ideal for shopping, casual walks, or vacation trips", "img": "data/IMG20250817162412.jpg"},
+    {"name": "Natural Woven Pandan Bag - Rose Motif", "price": 150000, "desc": "Natural pandan weave + jute fabric combination.", "Color": "Natural brown & white with pink rose motif.", "Size": "38 x 30 x 13 cm.", "Features": "Thick & durable handles, main zipper closure." , "Advantages": "Natural & eco-friendly look, suitable for both casual and formal fashion", "img": "data/IMG20250817163843.jpg"},
 ]
 
-st.header('GDP over time', divider='gray')
-
-''
-
-st.line_chart(
-    filtered_gdp_df,
-    x='Year',
-    y='GDP',
-    color='Country Code',
+# --- Filter ---
+search = st.text_input("🔍 Search product")
+min_price, max_price = st.slider(
+    "💰 Price Filter", 
+    min_value=0, max_value=200000, 
+    value=(0, 200000), step=10000
 )
 
-''
-''
+# Filter products based on search & price
+filtered_products = [
+    p for p in products 
+    if search.lower() in p["name"].lower() 
+    and min_price <= p["price"] <= max_price
+]
 
+st.write(f"Showing {len(filtered_products)} filtered products:")
 
-first_year = gdp_df[gdp_df['Year'] == from_year]
-last_year = gdp_df[gdp_df['Year'] == to_year]
+# --- Layout Grid (3 columns) ---
+cols = st.columns(3)
+for i, product in enumerate(filtered_products):
+    with cols[i % 3]:
+        st.image(product["img"], width=150)
+        st.subheader(product["name"])
+        st.write(product["desc"])
+        st.write(f"💰 Rp {product['price']:,}")
 
-st.header(f'GDP in {to_year}', divider='gray')
-
-''
-
-cols = st.columns(4)
-
-for i, country in enumerate(selected_countries):
-    col = cols[i % len(cols)]
-
-    with col:
-        first_gdp = first_year[first_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-        last_gdp = last_year[last_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-
-        if math.isnan(first_gdp):
-            growth = 'n/a'
-            delta_color = 'off'
-        else:
-            growth = f'{last_gdp / first_gdp:,.2f}x'
-            delta_color = 'normal'
-
-        st.metric(
-            label=f'{country} GDP',
-            value=f'{last_gdp:,.0f}B',
-            delta=growth,
-            delta_color=delta_color
-        )
+        st.markdown(f"[🛒 Buy Now via Gmail]")
