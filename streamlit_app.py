@@ -21,7 +21,6 @@ if not st.session_state.welcome_shown:
     st.toast("✨ Welcome to Tiga Putri — Timeless Indonesian Craftsmanship ✨", icon="👜")
     st.session_state.welcome_shown = True
 
-
 # =======================
 # INIT CART
 # =======================
@@ -110,18 +109,34 @@ st.markdown("""
 # LOGO & BRAND
 # =======================
 from PIL import Image
-logo = Image.open("data/assets/logo.png")  # pastikan path logo benar
+import streamlit as st
 
+# Load logo
+logo = Image.open("data/assets/logo.png")  # make sure the path is correct
+
+# Sidebar Branding
 st.sidebar.image(logo, use_container_width=True)
-st.sidebar.markdown("<h2 style='text-align:center;'>Tiga Putri</h2>", unsafe_allow_html=True)
-st.sidebar.markdown("<p style='text-align:center; color:#666;'>Elegant Export & Import Fashion for Women</p>", unsafe_allow_html=True)
+
+st.sidebar.markdown(
+    """
+    <div style='text-align:center;'>
+        <h2 style='text-align:center;'>Tiga Putri</h2>
+        <p style='text-align:center; color:#666;'>Export</p>
+        <p style='color:#444; font-size:16px;'>
+            ✨ Elegant Handicraft<br>
+            🌸 Made by Indonesia
+        </p>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+
 st.sidebar.markdown("---")
 
 # =======================
 # NAVIGASI
 # =======================
 page = st.sidebar.radio("Navigate", ["🏠 Home", "🌍 About", "📸 Lookbook", "🛍️ Shop", "🛒 Cart", "👤 Account"])
-
 
 # =======================
 # SIDEBAR FILTER
@@ -130,18 +145,18 @@ st.sidebar.markdown("### 🔎 Search Product")
 st.sidebar.text_input("Search by Name/Code")
 
 st.sidebar.markdown("### 📂 Category")
-kategori = st.sidebar.selectbox("Pilih Kategori", [
-    "Semua",
-    "Tas", "Tote Bags", "Handbags", "Backpack", "Clutch",
-    "Aksesoris", "Dompet", "Perhiasan", "Scarf", "Ikat Pinggang",
-    "Fashion Lainnya", "Sepatu", "Sandal", "Outerwear"
+category = st.sidebar.selectbox("Select Category", [
+    "All",
+    "Bags", "Tote Bags", "Handbags", "Backpacks", "Clutches",
+    "Accessories", "Wallets", "Jewelry", "Scarves", "Belts",
+    "Other Fashion", "Shoes", "Sandals", "Outerwear"
 ])
 
-warna = st.sidebar.multiselect("Warna", ["Hitam", "Putih", "Merah", "Biru", "Hijau"])
-material = st.sidebar.multiselect("Material", ["Pandan", "Kulit", "Batik", "Sintetis"])
-harga = st.sidebar.slider("Harga (Rp)", 100000, 2000000, (200000, 800000))
-ukuran = st.sidebar.multiselect("Ukuran", ["Small", "Medium", "Large"])
-country = st.sidebar.selectbox("Country (Export)", ["Indonesia", "Singapore", "Malaysia", "USA", "Europe"])
+color = st.sidebar.multiselect("Color", ["Black", "White", "Red", "Blue", "Green"])
+material = st.sidebar.multiselect("Material", ["Pandan", "Leather", "Batik", "Synthetic"])
+price = st.sidebar.slider("Price (Rp)", 100000, 2000000, (200000, 800000))
+size = st.sidebar.multiselect("Size", ["Small", "Medium", "Large"])
+country = st.sidebar.selectbox("Country (Export)", ["Singapore", "Malaysia", "USA", "Europe"])
 
 # =======================
 # DATA PRODUK (letakkan di atas, sekali saja)
@@ -170,6 +185,30 @@ products = [
         "desc": "Woven pandan tote bag with batik floral pattern in earthy tones.",
         "price": 250000,
         "img": "data/assets/produk3.jpg"
+    },
+    {
+        "kode": "P-TB-004",
+        "name": "Blush Croco Floral Tote",
+        "category": "Bag",
+        "desc": "A chic tote bag in blush pink crocodile-textured finish, accented with a vibrant floral panel. Combining elegance and durability, perfect for both formal and casual looks.",
+        "price": 250000,
+        "img": "data/assets/produk6.jpg"
+    },
+    {
+        "kode": "P-TB-005",
+        "name": "Geometric Batik Tote",
+        "category": "Handmade Tote Bag",
+        "desc": "Unique tote bag with an asymmetric geometric cut, combining natural woven pandan with traditional brown batik fabric. A fusion of modern design and Indonesian heritage.",
+        "price": 250000,
+        "img": "data/assets/produk9.jpg"
+    },
+    {
+        "kode": "P-TB-006",
+        "name": "Lilac Rose Accent Tote",
+        "category": "Handmade Tote Bag",
+        "desc": "A stylish lilac tote bag featuring a handwoven panel with rose flower design. Modern yet elegant, perfect for carrying essentials with a feminine touch.",
+        "price": 250000,
+        "img": "data/assets/produk7.jpg"
     }
 ]
 
@@ -182,7 +221,7 @@ if page == "🏠 Home":
     st.image("data/assets/ban2.png", use_container_width=True)  # gambar hero/banner
     
     st.markdown("### 🌟 Featured Collection")
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3,col4, col5, col6 = st.columns(6)
     with col1:
         st.image("data/assets/produk1.jpg")
         st.caption("Blue Butterfly Woven Tote")
@@ -192,6 +231,15 @@ if page == "🏠 Home":
     with col3:
         st.image("data/assets/produk3.jpg")
         st.caption("Floral Batik-Inspired Tote")
+    with col4:
+        st.image("data/assets/produk6.jpg")
+        st.caption("Blush Croco Floral Tote")
+    with col5:
+        st.image("data/assets/produk9.jpg")
+        st.caption("Geometric Batik Tote")
+    with col6:
+        st.image("data/assets/produk7.jpg")
+        st.caption("Lilac Rose Accent Tote")
 
 # =======================
 # HALAMAN ABOUT
@@ -211,16 +259,14 @@ elif page == "🌍 About":
     st.markdown("---")
 
     # =======================
-    # LAYANAN EKSPOR & IMPOR
+    # LAYANAN EKSPOR
     # =======================
-    st.subheader("📦 Export & Import Services")
+    st.subheader("📦 Export Services")
     st.write("""
-    We provide **premium export and import services** in the fashion industry:
-    - 🌍 Export of handmade products to various countries  
-    - 📦 Import of premium raw materials for production  
-    - 🤝 International business consulting services  
-    """)
-
+    At Tiga Putri, we specialize exclusively in **exporting Indonesian handmade crafts** to the international market:  
+    - 👜 **Premium Fashion Exports** – Woven bags, accessories, and artisanal fashion pieces.  
+    - 🌿 **Sustainable Craftsmanship** – Products made with eco–friendly and authentic materials.  
+    - 🤝 **Global Trade Partnerships** – Trusted collaborations with international buyers and distributors.  """)
     st.markdown("---")
 
     # =======================
@@ -254,33 +300,67 @@ elif page == "📸 Lookbook":
     Each design reflects **Indonesian artistry** blended with **modern elegance**.
     """)
 
-    # Data Lookbook
+    # Data Lookbook dengan detail lengkap
     lookbook_items = [
         {
             "img": "data/assets/produk1.jpg",
-            "title": "Blue Butterfly Woven Tote",
-            "desc": "A handwoven tote with elegant blue butterfly motifs, spacious and durable — perfect for daily style with a natural touch."
+            "Code": "P-TB-001",
+            "Name": "Blue Butterfly Woven Tote",
+            "Category": "Bag",
+            "Subcategory": "Handmade Tote Bag",
+            "Color": "White with Blue Accents",
+            "Price": "$28",
+            "Description": "Handcrafted woven tote bag decorated with vibrant blue butterfly motifs. Made from durable pandan leaf weaving with comfortable double handles, perfect for casual outings or shopping."
         },
         {
             "img": "data/assets/produk2.jpg",
-            "title": "Monochrome Crossbody",
-            "desc": "A lightweight black-and-white woven crossbody bag with a modern pattern and braided strap, ideal for casual outings."
+            "Code": "P-MC-002",
+            "Name": "Monochrome Crossbody",
+            "Category": "Bag",
+            "Subcategory": "Woven Crossbody Bag",
+            "Color": "Black & White",
+            "Price": "$25",
+            "Description": "A lightweight black-and-white woven crossbody bag with a modern pattern and braided strap, ideal for casual outings."
         },
         {
             "img": "data/assets/produk3.jpg",
-            "title": "Floral Batik-Inspired Tote",
-            "desc": "A pandan woven tote with batik-style floral accents, combining tradition and style for eco-friendly everyday use."
+            "Code": "P-FB-003",
+            "Name": "Floral Batik-Inspired Tote",
+            "Category": "Bag",
+            "Subcategory": "Handmade Tote Bag",
+            "Color": "Natural with Floral Accents",
+            "Price": "$30",
+            "Description": "A pandan woven tote with batik-style floral accents, combining tradition and style for eco-friendly everyday use."
         }
     ]
 
-    # Slider untuk navigasi
-    index = st.slider("Swipe the Lookbook →", 0, len(lookbook_items)-1, 0)
+    # Inisialisasi session state untuk lightbox
+    if "lightbox_open" not in st.session_state:
+        st.session_state.lightbox_open = None
 
-    # Tampilkan item sesuai slider
-    item = lookbook_items[index]
-    st.image(item["img"], use_container_width=True)
-    st.markdown(f"### {item['title']}")
-    st.caption(item["desc"])
+    # Jika lightbox aktif, tampilkan gambar besar + detail lengkap
+    if st.session_state.lightbox_open is not None:
+        item = lookbook_items[st.session_state.lightbox_open]
+        st.image(item["img"], use_container_width=True)
+        st.markdown(f"### {item['Name']}")
+        st.markdown(f"**Code:** {item['Code']}  ")
+        st.markdown(f"**Category:** {item['Category']}  ")
+        st.markdown(f"**Subcategory:** {item['Subcategory']}  ")
+        st.markdown(f"**Color:** {item['Color']}  ")
+        st.markdown(f"**Price:** {item['Price']}  ")
+        st.markdown(f"**Description:** {item['Description']}")
+        if st.button("Close Lightbox"):
+            st.session_state.lightbox_open = None
+        st.markdown("---")  # pemisah
+
+    # Grid 3 kolom
+    cols = st.columns(3)
+    for i, item in enumerate(lookbook_items):
+        with cols[i % 3]:
+            if st.button("", key=f"img_{i}", help=item["Name"]):
+                st.session_state.lightbox_open = i  # buka lightbox
+            st.image(item["img"], use_container_width=True)
+            st.markdown(f"### {item['Name']}")
 
 # =======================
 # HALAMAN SHOP
@@ -328,6 +408,34 @@ elif page == "🛒 Cart":
         if st.button("✅ Checkout (Simulation)"):
             st.success("Thank you! Your order has been placed (simulation).")
             st.session_state.cart = []
+
+    # =======================
+    # HELPER: Password Strength
+    # =======================
+    def password_strength_meter(password):
+        strength = 0
+        if len(password) >= 10: strength += 1
+        if re.search(r"[A-Z]", password): strength += 1
+        if re.search(r"[a-z]", password): strength += 1
+        if re.search(r"\d", password): strength += 1
+        if re.search(r"[!@#$%^&*(),.?\":{}|<>]", password): strength += 1
+
+        # level score
+        if strength <= 2:
+            level = "❌ Weak"
+            color = "red"
+            percent = 0.4
+        elif strength in [3, 4]:
+            level = "⚠️ Medium"
+            color = "orange"
+            percent = 0.7
+        else:
+            level = "✅ Strong"
+            color = "green"
+            percent = 1.0
+
+        st.markdown(f"<span style='color:{color}; font-weight:bold;'>{level}</span>", unsafe_allow_html=True)
+        st.progress(percent)
 
 # =======================
 # HALAMAN ACCOUNT
@@ -379,25 +487,27 @@ elif page == "👤 Account":
             if st.button("Forgot Password?"):
                 st.session_state["reset_mode"] = True
 
-            if "reset_mode" in st.session_state and st.session_state["reset_mode"]:
-                st.subheader("🔑 Reset Password")
-                with st.form("reset_form"):
-                    new_pass = st.text_input("Enter New Password", type="password")
-                    confirm_pass = st.text_input("Confirm New Password", type="password")
-                    reset = st.form_submit_button("Reset Password")
+            # ---------------- RESET PASSWORD ----------------
+        if "reset_mode" in st.session_state and st.session_state["reset_mode"]:
+            st.subheader("🔑 Reset Password")
+            with st.form("reset_form"):
+                new_pass = st.text_input("Enter New Password", type="password")
+                confirm_pass = st.text_input("Confirm New Password", type="password")
+                reset = st.form_submit_button("Reset Password")
 
-                    if reset:
-                        if not new_pass or len(new_pass) < 10:
-                            st.error("⚠️ Password must be at least 10 characters.")
-                        elif new_pass != confirm_pass:
-                            st.error("⚠️ Passwords do not match.")
-                        else:
-                            st.session_state.registered_users[email] = new_pass
-                            st.success("🎉 Password reset successful! Please login again.")
-                            del st.session_state["reset_mode"]
-                            del st.session_state["user_email"]
-                            st.experimental_rerun()
+                if reset:
+                    if not new_pass or len(new_pass) < 10:
+                        st.error("⚠️ Password must be at least 10 characters.")
+                    elif new_pass != confirm_pass:
+                        st.error("⚠️ Passwords do not match.")
+                    else:
+                        st.session_state.registered_users[email] = new_pass
+                        st.success("🎉 Password reset successful! Please login again.")
+                        del st.session_state["reset_mode"]
+                        del st.session_state["user_email"]
+                        st.experimental_rerun()
 
+        
         else:
             # Akun baru → langsung ke form Create Account
             st.markdown("<h2>Create an account</h2>", unsafe_allow_html=True)
@@ -459,8 +569,8 @@ elif page == "👤 Account":
                         for e in errors:
                             st.error(f"⚠️ {e}")
                     else:
+                        # Simpan user
                         st.session_state.registered_users[email] = password
-                        st.success("🎉 Account created successfully! Welcome to Tiga Putri.")
                         st.session_state["user_account"] = {
                             "email": email,
                             "password": password,
@@ -475,6 +585,11 @@ elif page == "👤 Account":
                             "zip": zipcode,
                             "marketing": marketing
                         }
+
+                        # ✅ Auto-login langsung
+                        st.session_state.user_email = email
+                        st.success(f"🎉 Account created successfully! Welcome, {first_name} {last_name}. You are now logged in.")
+
                         if st.button("Logout"):
                             del st.session_state["user_email"]
                             st.experimental_rerun()
